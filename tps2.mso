@@ -5,21 +5,9 @@
 ** Q1 := false.                 Q2 := false.
 */
 
-Bool = [True, False]
-{
-    etat = 2;
-    init = 0;
+load bool.mso;;
 
-    0 = False;
-    1 = True;
-
-    1 -> 1 [setTrue];
-    0 -> 1 [setTrue];
-    0 -> 0 [setFalse,isFalse];
-    1 -> 0 [setFalse];
-};;
-
-Proc = [set, wait, critic, finalSet, end]
+Proc = [set, wait, critic, end]
 {
     etat = 5;
     init = 0;
@@ -27,25 +15,24 @@ Proc = [set, wait, critic, finalSet, end]
     0 = set;
     1 = wait;
     2 = critic;
-    3 = finalSet;
-    4 = end;
+    3 = end;
 
     0 -> 1 [goWait];
     1 -> 2 [goCritic];
-    2 -> 3 [goFinalSet];
-    3 -> 4 [goEnd];
+    2 -> 0 [goBeg];
+    0 -> 3 [goEnd];
 };;
 
 system = <Proc p0, Proc p1, Bool Q1, Bool Q2>
 {
-    <goWait, _, setTrue, _>      -> p0_setTrue;
-    <_, goWait, _, setTrue>      -> p1_setTrue;
-    <goCritic, _, _, isFalse>    -> p0_unlock;
-    <_, goCritic, isFalse, _>    -> p1_unlock;
-    <goFinalSet, _, setFalse, _> -> p0_setFalse;
-    <_, goFinalSet, _, setFalse> -> p1_setFalse;
-    <goEnd, _, _, _>             -> p0_finish;
-    <_, goEnd, _, _>             -> p1_finish;
+    <goWait, _, setTrue, _>     -> p0_setTrue;
+    <_, goWait, _, setTrue>     -> p1_setTrue;
+    <goCritic, _, _, isFalse>   -> p0_unlock;
+    <_, goCritic, isFalse, _>   -> p1_unlock;
+    <goBeg, _, setFalse, _>     -> p0_setFalse;
+    <_, goBeg, _, setFalse>     -> p1_setFalse;
+    <goEnd, _, _, _>            -> p0_finish;
+    <_, goEnd, _, _>            -> p1_finish;
 };;
 
 todot tps2.dot system;;

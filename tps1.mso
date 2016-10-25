@@ -4,34 +4,7 @@
 ** Critical Section            Critical Section
 */
 
-Var = [e1, e2]
-{
-    etat = 3;
-    init = 0; 
-
-    1 = e1;
-    2 = e2;
-
-    0 -> 1 [set1];
-    0 -> 2 [set2];
-    1 -> 2 [set2];
-    2 -> 1 [set1];
-};;
-
-Var = [e1, e2]
-{
-    etat = 2;
-    init = 0,1; 
-
-    0 = e1;
-    1 = e2;
-
-    1 -> 1 [set2];
-    0 -> 1 [set2];
-    0 -> 0 [set1];
-    1 -> 0 [set1];
-};;
-
+load variable.mso;;
 
 Proc = [set, wait, critic, end]
 {
@@ -45,21 +18,20 @@ Proc = [set, wait, critic, end]
 
     0 -> 1 [goWait];
     1 -> 2 [goCritic];
-    2 -> 3 [goEnd];
+    2 -> 0 [loop];
+    0 -> 3 [goEnd];
 };;
 
 system = <Proc p0, Proc p1, Var TURN>
 {
-    <goWait, _, set1> -> p0_set1;
-    <_, goWait, set2> -> p1_set2;
-    <goCritic, _, _>  -> p0_unlock;
-    <_, goCritic, _>  -> p1_unlock;
-    <goEnd, _, _>     -> p0_finish;
-    <_, goEnd, _>     -> p1_finish;
+    <goWait, _, set1>  -> p0_set1;
+    <_, goWait, set2>  -> p1_set2;
+    <goCritic, _, is2> -> p0_unlock;
+    <_, goCritic, is1> -> p1_unlock;
+    <loop, _, _>       -> p0_loop;
+    <_, loop, _>       -> p1_loop;
+    <goEnd, _, _>      -> p0_finish;
+    <_, goEnd, _>      -> p1_finish;
 };;
 
-constraint = system | !(p0.critic && !TURN.e2) && !(p1.critic && !TURN.e1);;
-path = constraint -> p0.end && p1.end;;
-
-todot tps.dot constraint;;
-todot tps_solution.dot path;;
+todot tps1.dot system;;
