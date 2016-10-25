@@ -1,0 +1,65 @@
+/*
+** TURN := 1;                  Turn := 2;
+** wait until TURN = 2;        wait until TURN = 1;
+** Critical Section            Critical Section
+*/
+
+Var = [e1, e2]
+{
+    etat = 3;
+    init = 0; 
+
+    1 = e1;
+    2 = e2;
+
+    0 -> 1 [set1];
+    0 -> 2 [set2];
+    1 -> 2 [set2];
+    2 -> 1 [set1];
+};;
+
+Var = [e1, e2]
+{
+    etat = 2;
+    init = 0,1; 
+
+    0 = e1;
+    1 = e2;
+
+    1 -> 1 [set2];
+    0 -> 1 [set2];
+    0 -> 0 [set1];
+    1 -> 0 [set1];
+};;
+
+
+Proc = [set, wait, critic, end]
+{
+    etat = 4;
+    init = 0;
+
+    0 = set;
+    1 = wait;
+    2 = critic;
+    3 = end;
+
+    0 -> 1 [goWait];
+    1 -> 2 [goCritic];
+    2 -> 3 [goEnd];
+};;
+
+system = <Proc p0, Proc p1, Var TURN>
+{
+    <goWait, _, set1> -> p0_set1;
+    <_, goWait, set2> -> p1_set2;
+    <goCritic, _, _>  -> p0_unlock;
+    <_, goCritic, _>  -> p1_unlock;
+    <goEnd, _, _>     -> p0_finish;
+    <_, goEnd, _>     -> p1_finish;
+};;
+
+constraint = system | !(p0.critic && !TURN.e2) && !(p1.critic && !TURN.e1);;
+path = constraint -> p0.end && p1.end;;
+
+todot tps.dot constraint;;
+todot tps_solution.dot path;;
