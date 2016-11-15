@@ -1,0 +1,22 @@
+* TODO do
+  [X] Variable
+  [ ] CTL (vérifier tps1.mso)
+  [ ] simple process n = 3 (faire programme)
+
+* Simple n process solution
+** Déplier la boucle
+** 7 états + états de fin => 8 * 3 (n)
+
+* CTL
+  AX(false) => états bloquants
+** A vérifier :
+  pas 2 processus en section critique
+  si p0 wait alors il doit passer à Section Critique => Equité (AF ou EF (préciser les 2)
+  p0.wait & p1.run || p0.run & p1.wait
+*** Pour chaque propriété donner le chemin
+** Faire remonter sur l'état initial :
+   Utiliser AG
+
+* LTL
+  pas de chose 2 en section critique
+  si p0 wait alors il doit passer à Section Critique => Equité (AF)

@@ -6,7 +6,7 @@ Bool = [True, False]
     0 = False;
     1 = True;
 
-    1 -> 1 [setTrue];
+    1 -> 1 [setTrue, isTrue];
     0 -> 1 [setTrue];
     0 -> 0 [setFalse,isFalse];
     1 -> 0 [setFalse];

@@ -1,0 +1,18 @@
+/*
+    global Q;
+    global TURN;
+
+    /* protocols for P1 */
+    for j := 1 to n -1 do
+    begin
+        Q[i] := j;
+        TURN[j] := i;
+        wait until (Vk != i, Q[k] < j) or TURN[j] != i
+    end;
+    Critical Section;
+    Q[i] := 0;
+*/
+
+load variable.mso;;
+load bool.mso;;
+

@@ -1,0 +1,8 @@
+vérifier les états initials !
+
+=> Exemple des sémaphore 1
+system += prop <- AG(!(p1.section_critique && p2.section_critique));;
+
+EF => dans le future il *existe* un état vérifiant la propriété
+AF => dans le future *tous* les états vérifient la propriété
+AG => dans le future *tous* les états ne vérifient pas la propriété

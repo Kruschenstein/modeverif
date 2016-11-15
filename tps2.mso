@@ -9,7 +9,7 @@ load bool.mso;;
 
 Proc = [set, wait, critic, end]
 {
-    etat = 5;
+    etat = 4;
     init = 0;
 
     0 = set;
