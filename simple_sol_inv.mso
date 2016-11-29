@@ -9,13 +9,13 @@
 load variable.mso;;
 load bool.mso;;
 
-Proc = [setBool, setVar, wait, critic, end]
+Proc = [setVar, setBool, wait, critic, end]
 {
     etat = 5;
     init = 0;
 
-    0 = setBool;
-    1 = setVar;
+    0 = setVar;
+    1 = setBool;
     2 = wait;
     3 = critic;
     4 = end;
@@ -29,8 +29,10 @@ Proc = [setBool, setVar, wait, critic, end]
 
 system = <Proc p0, Proc p1, Bool Q1, Bool Q2, Var TURN>
 {
-    <goSetVar, _, setTrue, _, _>    -> p0_set_Q1_True;
-    <_, goSetVar, _, setTrue, _>    -> p1_set_Q2_True;
+    <goSetVar, _, _, _, set1>       -> p0_set_TURN_1;
+    <_, goSetVar, _, _, set2>       -> p1_set_TURN_2;
+    <goWait, _, setTrue, _, _>      -> p0_set_Q1_True;
+    <_, goWait, _, setTrue, _>      -> p1_set_Q2_True;
     <goWait, _, _, _, set1>         -> p0_set_TURN_1;
     <_, goWait, _, _, set2>         -> p1_set_TURN_2;
     <goCritic, _, _, isFalse, _>    -> p0_unlock;
