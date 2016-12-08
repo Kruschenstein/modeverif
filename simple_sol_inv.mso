@@ -45,4 +45,4 @@ system = <Proc p0, Proc p1, Bool Q1, Bool Q2, Var TURN>
     <_, goEnd, _, _, _>             -> p1_finish;
 };;
 
-todot simple_sol.dot system;;
+todot dot/simple_sol_inv.dot system;;

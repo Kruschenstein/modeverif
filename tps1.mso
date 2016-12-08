@@ -52,6 +52,6 @@ system += exist_suite2 <- AG(p0.wait -> EF(p0.critic));; /* FAIBLE */
 bug = system -> AX(false) && p0.wait;;
 /* < explication au bug (si y a bug) */
 
-todot tps1_bug.dot bug;;
-todot tps1_ctl.dot system;;
-todot tps1.dot system;;
+todot dot/tps1_bug.dot bug;;
+todot dot/tps1_ctl.dot system;;
+todot dot/tps1.dot system;;

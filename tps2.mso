@@ -35,4 +35,4 @@ system = <Proc p0, Proc p1, Bool Q1, Bool Q2>
     <_, goEnd, _, _>            -> p1_finish;
 };;
 
-todot tps2.dot system;;
+todot dot/tps2.dot system;;
