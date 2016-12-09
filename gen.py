@@ -42,6 +42,16 @@ def genSystem(N):
 
     system += "{\n"
 
+    for i in range(N):
+        system += INDENTATION + "<"
+        tab = ["_"] * N
+        tab[i] = "goEnd"
+        system += ", ".join(tab)
+        system += ", "
+        system += ", ".join(["_"] * (N + N -1))
+        system += "> -> p%i_end;\n" % (i +1)
+    system += "\n"
+
     # for j from 1 to n-1:
     for j in range(1, N):
         # Q[i] := j
@@ -78,8 +88,11 @@ def genSystem(N):
             system += INDENTATION + "<"
             system += "_, " * (i -1)
             system += "goCritic, " if j == N -1 else "goSetQ, "
-            system += "_, " * (N - i + N)
-            system += "_," * (j -1)
+            system += "_, " * (N - i)
+            varQ = ["_"] * N
+            varQ[i -1] = "is%i" % j
+            system += ", ".join(varQ) + ", "
+            system += "_, " * (j -1)
             system += "isNe%i" % i
             system += ", _" * (N -j -1)            
             system += "> -> p%i_unlock_iteration_%i;\n" % (i, j)
@@ -88,7 +101,7 @@ def genSystem(N):
             system += "goCritic, " if j == N -1 else "goSetQ, "
             system += "_, " * (N - i)
             lt = ["isLt%i" % j] * N
-            lt[i -1] = "_"
+            lt[i -1] = "is%i" % j
             system += ", ".join(lt) + ", "
             for k in range(1, N):
                 if k != (N -1):
