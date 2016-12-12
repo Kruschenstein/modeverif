@@ -33,8 +33,6 @@ system = <Proc p0, Proc p1, Bool Q1, Bool Q2, Var TURN>
     <_, goSetVar, _, _, set2>       -> p1_set_TURN_2;
     <goWait, _, setTrue, _, _>      -> p0_set_Q1_True;
     <_, goWait, _, setTrue, _>      -> p1_set_Q2_True;
-    <goWait, _, _, _, set1>         -> p0_set_TURN_1;
-    <_, goWait, _, _, set2>         -> p1_set_TURN_2;
     <goCritic, _, _, isFalse, _>    -> p0_unlock;
     <goCritic, _, _, _, is2>        -> p0_unlock;
     <_, goCritic, isFalse, _, _>    -> p1_unlock;
@@ -45,4 +43,9 @@ system = <Proc p0, Proc p1, Bool Q1, Bool Q2, Var TURN>
     <_, goEnd, _, _, _>             -> p1_finish;
 };;
 
+bug = system -> p1.critic && p0.critic;;
+
+load ctl.mso;;
 todot dot/simple_sol_inv.dot system;;
+todot dot/simple_sol_inv_bug.dot bug;;
+todot dot/simple_ctl_inv.dot system;;

@@ -1,0 +1,11 @@
+/* CTL */
+/* 2 processus en section critique */
+system += good_critic <- AG(!(p0.critic && p1.critic));;
+
+/* équités */
+system += exist_suite <- AG(p0.wait -> AF(p0.critic));; /* FORT */
+system += exist_suite2 <- AG(p0.wait -> EF(p0.critic));; /* FAIBLE */
+
+
+
+

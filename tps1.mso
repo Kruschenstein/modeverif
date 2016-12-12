@@ -6,6 +6,7 @@
 
 load variable.mso;;
 
+
 Proc = [set, wait, critic, end]
 {
     etat = 4;
@@ -34,23 +35,9 @@ system = <Proc p0, Proc p1, Var TURN>
     <_, goEnd, _>      -> p1_finish;
 };;
 
-todot tps1.dot system;;
+load ctl.mso;;
 
-/* CTL */
-/* 2 processus en section critique */
-system += good_critic <- AG(!(p0.critic && p1.critic));;
-
-/* équités */
-system += exist_suite <- AG(p0.wait -> AF(p0.critic));; /* FORT */
-system += exist_suite2 <- AG(p0.wait -> EF(p0.critic));; /* FAIBLE */
-
-/* Un process attend alors que l'autre à fini */
-/* -system += bad_locks <- AX(false) && (p0.wait || p1.wait);;- => useless */
-/* Contre exemple du CTL équité forte & faible */
-/* | */
-/* v */
 bug = system -> AX(false) && p0.wait;;
-/* < explication au bug (si y a bug) */
 
 todot dot/tps1_bug.dot bug;;
 todot dot/tps1_ctl.dot system;;

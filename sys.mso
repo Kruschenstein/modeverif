@@ -1,0 +1,73 @@
+VarQ = [e0, e1]
+{
+   etat = 2;
+   init = 0;
+
+   0 = e0;
+   1 = e1;
+
+   0 -> 0 [set0, is0, isLt1];
+   0 -> 1 [set1];
+   1 -> 0 [set0];
+   1 -> 1 [set1, is1];
+};;
+
+VarTURN = [e1, e2]
+{
+   etat = 2;
+   init = 0;
+
+   0 = e1;
+   1 = e2;
+
+   0 -> 0 [set1, isNe2];
+   0 -> 1 [set2];
+   1 -> 0 [set1];
+   1 -> 1 [set2, isNe1];
+};;
+
+Processus = [setQ, setTURN, wait, critic, end]
+{
+    etat = 5;
+    init = 0;
+
+    0 = setQ;
+    1 = setTURN;
+    2 = wait;
+    3 = critic;
+    4 = end;
+
+    0 -> 1 [goSetTURN];
+    0 -> 4 [goEnd];
+    1 -> 2 [goWait];
+    2 -> 3 [goCritic];
+    2 -> 0 [goSetQ];
+    3 -> 0 [goSetQ];
+};;
+
+
+system = <Processus P1, Processus P2, VarQ Q1, VarQ Q2, VarTURN TURN1>
+{
+   <goEnd, _, _, _, _> -> p1_end;
+   <_, goEnd, _, _, _> -> p2_end;
+
+   <goSetTURN, _, set1, _, _> -> p1_set_Q1_1;
+   <_, goSetTURN, _, set1, _> -> p2_set_Q2_1;
+
+   <goWait, _, _, _, set1> -> p1_set_TURN1_1;
+   <_, goWait, _, _, set2> -> p2_set_TURN1_2;
+
+   <goCritic, _, is1, _, isNe1> -> p1_unlock_iteration_1;
+   <goCritic, _, is1, isLt1, _> -> p1_unlock_iteration_1;
+   <_, goCritic, _, is1, isNe2> -> p2_unlock_iteration_1;
+   <_, goCritic, isLt1, is1, _> -> p2_unlock_iteration_1;
+
+   <goSetQ, _, set0, _, _> -> p1_set_Q1_0;
+   <_, goSetQ, _, set0, _> -> p2_set_Q2_0;
+};;
+
+bug1 = system -> AX(false) && (P2.wait||P1.wait);;
+bug2 = system -> P1.critic && P2.critic;;
+
+todot dot/nprocess_bug1.dot bug1;;
+todot dot/nprocess_bug2.dot bug2;;
