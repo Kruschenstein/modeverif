@@ -1,0 +1,16 @@
+digraph G {
+  rankdir=LR
+  node [shape="circle"]
+  node [style="filled", fillcolor="#FDEDD3"]
+  fontname="Lato"
+  node [fontname="Lato"]
+  edge [fontname="Lato"]
+  size="8.2,8.2" edge[arrowhead=vee, arrowsize=.7]
+  I [label="", style=invis, width=0]
+  I -> 0
+  0 [label="0"]
+  0 -> 0 [label=<!p0.critic | !p1.critic>]
+  0 -> 1 [label=<p0.critic &amp; p1.critic>]
+  1 [label="1"]
+  1 -> 1 [label=<1<br/><font color="#5DA5DA">⓿</font>>]
+}
