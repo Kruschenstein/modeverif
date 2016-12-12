@@ -1,18 +1,4 @@
-VarQ = [e0, e1]
-{
-   etat = 2;
-   init = 0;
-
-   0 = e0;
-   1 = e1;
-
-   0 -> 0 [set0, is0, isLt1];
-   0 -> 1 [set1];
-   1 -> 0 [set0];
-   1 -> 1 [set1, is1];
-};;
-
-VarTURN = [e1, e2]
+VarJ = [e1, e2]
 {
    etat = 2;
    init = 0;
@@ -20,10 +6,50 @@ VarTURN = [e1, e2]
    0 = e1;
    1 = e2;
 
-   0 -> 0 [set1, isNe2];
+   0 -> 0 [is1];
    0 -> 1 [set2];
+   1 -> 1 [is2];
+   1 -> 0 [set0];
+};;
+
+VarQ = [e0, e1, e2]
+{
+   etat = 3;
+   init = 0;
+
+   0 = e0;
+   1 = e1;
+   2 = e2;
+
+   0 -> 0 [set0, is0, isLt1, isLt2];
+   0 -> 1 [set1];
+   0 -> 2 [set2];
+   1 -> 0 [set0];
+   1 -> 1 [set1, is1, isLt2];
+   1 -> 2 [set2];
+   2 -> 0 [set0];
+   2 -> 1 [set1];
+   2 -> 2 [set2, is2];
+};;
+
+VarTURN = [e1, e2, e3]
+{
+   etat = 3;
+   init = 0;
+
+   0 = e1;
+   1 = e2;
+   2 = e3;
+
+   0 -> 0 [set1, isNe2, isNe3];
+   0 -> 1 [set2];
+   0 -> 2 [set3];
    1 -> 0 [set1];
-   1 -> 1 [set2, isNe1];
+   1 -> 1 [set2, isNe1, isNe3];
+   1 -> 2 [set3];
+   2 -> 0 [set1];
+   2 -> 1 [set2];
+   2 -> 2 [set3, isNe1, isNe2];
 };;
 
 Processus = [setQ, setTURN, wait, critic, end]
@@ -46,28 +72,49 @@ Processus = [setQ, setTURN, wait, critic, end]
 };;
 
 
-system = <Processus P1, Processus P2, VarQ Q1, VarQ Q2, VarTURN TURN1>
+system = <Processus P1, Processus P2, Processus P3, VarQ Q1, VarQ Q2, VarQ Q3, VarTURN TURN1, VarTURN TURN2, VarJ J>
 {
-   <goEnd, _, _, _, _> -> p1_end;
-   <_, goEnd, _, _, _> -> p2_end;
+   <goEnd, _, _, _, _, _, _, _, _> -> p1_end;
+   <_, goEnd, _, _, _, _, _, _, _> -> p2_end;
+   <_, _, goEnd, _, _, _, _, _, _> -> p3_end;
 
-   <goSetTURN, _, set1, _, _> -> p1_set_Q1_1;
-   <_, goSetTURN, _, set1, _> -> p2_set_Q2_1;
+   <goSetTURN, _, _, set1, _, _, _, _, is1> -> p1_set_Q1_1;
+   <_, goSetTURN, _, _, set1, _, _, _, is1> -> p2_set_Q2_1;
+   <_, _, goSetTURN, _, _, set1, _, _, is1> -> p3_set_Q3_1;
 
-   <goWait, _, _, _, set1> -> p1_set_TURN1_1;
-   <_, goWait, _, _, set2> -> p2_set_TURN1_2;
+   <goWait, _, _, _, _, _, set1, _, is1> -> p1_set_TURN1_1;
+   <_, goWait, _, _, _, _, set2, _, is1> -> p2_set_TURN1_2;
+   <_, _, goWait, _, _, _, set3, _, is1> -> p3_set_TURN1_3;
 
-   <goCritic, _, is1, _, isNe1> -> p1_unlock_iteration_1;
-   <goCritic, _, is1, isLt1, _> -> p1_unlock_iteration_1;
-   <_, goCritic, _, is1, isNe2> -> p2_unlock_iteration_1;
-   <_, goCritic, isLt1, is1, _> -> p2_unlock_iteration_1;
+   <goSetQ, _, _, _, _, _, isNe1, _, is1> -> p1_unlock_iteration_1;
+   <goSetQ, _, _, _, isLt1, isLt1, _, _, is1> -> p1_unlock_iteration_1;
+   <_, goSetQ, _, _, _, _, isNe2, _, is1> -> p2_unlock_iteration_1;
+   <_, goSetQ, _, isLt1, _, isLt1, _, _, is1> -> p2_unlock_iteration_1;
+   <_, _, goSetQ, _, _, _, isNe3, _, is1> -> p3_unlock_iteration_1;
+   <_, _, goSetQ, isLt1, isLt1, _, _, _, is1> -> p3_unlock_iteration_1;
 
-   <goSetQ, _, set0, _, _> -> p1_set_Q1_0;
-   <_, goSetQ, _, set0, _> -> p2_set_Q2_0;
+   <goSetTURN, _, _, set2, _, _, _, _, is2> -> p1_set_Q1_2;
+   <_, goSetTURN, _, _, set2, _, _, _, is2> -> p2_set_Q2_2;
+   <_, _, goSetTURN, _, _, set2, _, _, is2> -> p3_set_Q3_2;
+
+   <goWait, _, _, _, _, _, _,set1, is2> -> p1_set_TURN2_1;
+   <_, goWait, _, _, _, _, _,set2, is2> -> p2_set_TURN2_2;
+   <_, _, goWait, _, _, _, _,set3, is2> -> p3_set_TURN2_3;
+
+   <goCritic, _, _, _, _, _, _, isNe1, is2> -> p1_unlock_iteration_2;
+   <goCritic, _, _, _, isLt2, isLt2, _, _, is2> -> p1_unlock_iteration_2;
+   <_, goCritic, _, _, _, _, _, isNe2, is2> -> p2_unlock_iteration_2;
+   <_, goCritic, _, isLt2, _, isLt2, _, _, is2> -> p2_unlock_iteration_2;
+   <_, _, goCritic, _, _, _, _, isNe3, is2> -> p3_unlock_iteration_2;
+   <_, _, goCritic, isLt2, isLt2, _, _, _, is2> -> p3_unlock_iteration_2;
+
+   <goSetQ, _, _, set0, _, _, _, _, _> -> p1_set_Q1_0;
+   <_, goSetQ, _, _, set0, _, _, _, _> -> p2_set_Q2_0;
+   <_, _, goSetQ, _, _, set0, _, _, _> -> p3_set_Q3_0;
 };;
 
-bug1 = system -> AX(false) && (P2.wait||P1.wait);;
-bug2 = system -> P1.critic && P2.critic;;
+bug1 = system -> AX(false) && (P1.wait || P2.wait || P3.wait);;
+bug2 = system -> (P1.critic && P2.critic) || (P1.critic && P3.critic) || (P2.critic && P3.critic);;
 
 todot dot/nprocess_bug1.dot bug1;;
 todot dot/nprocess_bug2.dot bug2;;
