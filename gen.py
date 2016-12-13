@@ -2,7 +2,7 @@
 
 from sys import argv
 
-N = int(argv[1]) if len(argv) >= 2 else 2
+N = int(argv[1]) if len(argv) >= 2 else 3
 
 def capitalize(word):
     """
