@@ -1,6 +1,6 @@
 /*
-** Q1 := true;                          Q2 := true;
 ** TURN := 1;                           TURN := 2;
+** Q1 := true;                          Q2 := true;
 ** wait until not Q2 or TURN = 2;       wait until not Q1 or TURN = 1;
 ** Critical Section;                    Critical Section;
 ** Q1 := false                          Q2 := false;
@@ -49,3 +49,9 @@ load ctl.mso;;
 todot dot/simple_sol_inv.dot system;;
 todot dot/simple_sol_inv_bug.dot bug;;
 todot dot/simple_ctl_inv.dot system;;
+
+/* LTL */
+load ltl_sys.mso;;
+
+todot dot/simple_sol_ltl_eqfort.dot eqfort;;
+todot dot/simple_sol_ltl_exmut.dot exmut;;

@@ -35,10 +35,17 @@ system = <Proc p0, Proc p1, Var TURN>
     <_, goEnd, _>      -> p1_finish;
 };;
 
+/* CTL */
 load ctl.mso;;
 
 bug = system -> AX(false) && p0.wait;;
 
+/* LTL */
+load ltl_sys.mso;;
+
 todot dot/tps1_bug.dot bug;;
 todot dot/tps1_ctl.dot system;;
 todot dot/tps1.dot system;;
+
+todot dot/tps1_ltl_eqfort.dot eqfort;;
+todot dot/tps1_ltl_exmut.dot exmut;;

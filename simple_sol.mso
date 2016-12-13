@@ -43,7 +43,14 @@ system = <Proc p0, Proc p1, Bool Q1, Bool Q2, Var TURN>
     <_, goEnd, _, _, _>             -> p1_finish;
 };;
 
+/* CTL */
 load ctl.mso;;
 
 todot dot/simple_sol.dot system;;
 todot dot/simple_ctl.dot system;;
+
+/* LTL */
+load ltl_sys.mso;;
+
+todot dot/simple_sol_ltl_eqfort.dot eqfort;;
+todot dot/simple_sol_ltl_exmut.dot exmut;;

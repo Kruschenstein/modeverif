@@ -1,0 +1,21 @@
+exclusion_mutuelle =
+{
+    etat = 2;
+    acc = 1;
+    init = 0;
+
+    0 - !p -> 0;
+    0 - p -> 1;
+    1 - true -> 1 [0];
+};;
+
+equite_forte =
+{
+    etat = 2;
+    acc = 1;
+    init = 0;
+
+    0 - true -> 0;
+    0 - a && !b -> 1;
+    1 - !b -> 1 [0];
+};;

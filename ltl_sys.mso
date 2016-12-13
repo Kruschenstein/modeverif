@@ -1,0 +1,9 @@
+load ltl.mso;;
+
+S = automaton system;;
+
+em = S && exclusion_mutuelle[p <- p0.critic && p1.critic];;
+exmut = reduce em;;
+
+ef = S && equite_forte[a <- p0.wait, b <- p0.critic];;
+eqfort = reduce ef;;
