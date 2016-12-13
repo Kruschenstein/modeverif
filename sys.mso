@@ -1,17 +1,3 @@
-VarJ = [e1, e2]
-{
-   etat = 2;
-   init = 0;
-
-   0 = e1;
-   1 = e2;
-
-   0 -> 0 [is1];
-   0 -> 1 [set2];
-   1 -> 1 [is2];
-   1 -> 0 [set0];
-};;
-
 VarQ = [e0, e1, e2]
 {
    etat = 3;
@@ -52,69 +38,83 @@ VarTURN = [e1, e2, e3]
    2 -> 2 [set3, isNe1, isNe2];
 };;
 
-Processus = [setQ, setTURN, wait, critic, end]
+Processus = [setQ1, setTURN1, wait1, setQ2, setTURN2, wait2, critic, end]
 {
-    etat = 5;
-    init = 0;
+   etat = 8;
+   init = 0;
 
-    0 = setQ;
-    1 = setTURN;
-    2 = wait;
-    3 = critic;
-    4 = end;
+   0 = setQ1;
+   1 = setTURN1;
+   2 = wait1;
+   3 = setQ2;
+   4 = setTURN2;
+   5 = wait2;
+   6 = critic;
+   7 = end;
 
-    0 -> 1 [goSetTURN];
-    0 -> 4 [goEnd];
-    1 -> 2 [goWait];
-    2 -> 3 [goCritic];
-    2 -> 0 [goSetQ];
-    3 -> 0 [goSetQ];
+   0 -> 1 [goSetTURN1];
+   1 -> 2 [goWait1];
+   2 -> 3 [goSetQ2];
+   3 -> 4 [goSetTURN2];
+   4 -> 5 [goWait2];
+   5 -> 6 [goCritic];
+   6 -> 0 [goSetQ1];
+   0 -> 7 [goEnd];
+};;
+system = <Processus P1, Processus P2, Processus P3, VarQ Q1, VarQ Q2, VarQ Q3, VarTURN TURN1, VarTURN TURN2>
+{
+   <goEnd, _, _, _, _, _, _, _> -> p1_end;
+   <_, goEnd, _, _, _, _, _, _> -> p2_end;
+   <_, _, goEnd, _, _, _, _, _> -> p3_end;
+
+   <goSetTURN1, _, _, set1, _, _, _, _> -> p1_set_Q1_1;
+   <_, goSetTURN1, _, _, set1, _, _, _> -> p2_set_Q2_1;
+   <_, _, goSetTURN1, _, _, set1, _, _> -> p3_set_Q3_1;
+
+   <goWait1, _, _, _, _, _, set1, _> -> p1_set_TURN1_1;
+   <_, goWait1, _, _, _, _, set2, _> -> p2_set_TURN1_2;
+   <_, _, goWait1, _, _, _, set3, _> -> p3_set_TURN1_3;
+
+   <goSetQ2, _, _, _, _, _, isNe1, _> -> p1_unlock_iteration_1;
+   <goSetQ2, _, _, _, isLt1, isLt1, _, _> -> p1_unlock_iteration_1;
+   <_, goSetQ2, _, _, _, _, isNe2, _> -> p2_unlock_iteration_1;
+   <_, goSetQ2, _, isLt1, _, isLt1, _, _> -> p2_unlock_iteration_1;
+   <_, _, goSetQ2, _, _, _, isNe3, _> -> p3_unlock_iteration_1;
+   <_, _, goSetQ2, isLt1, isLt1, _, _, _> -> p3_unlock_iteration_1;
+
+   <goSetTURN2, _, _, set2, _, _, _, _> -> p1_set_Q1_2;
+   <_, goSetTURN2, _, _, set2, _, _, _> -> p2_set_Q2_2;
+   <_, _, goSetTURN2, _, _, set2, _, _> -> p3_set_Q3_2;
+
+   <goWait2, _, _, _, _, _, _, set1> -> p1_set_TURN2_1;
+   <_, goWait2, _, _, _, _, _, set2> -> p2_set_TURN2_2;
+   <_, _, goWait2, _, _, _, _, set3> -> p3_set_TURN2_3;
+
+   <goCritic, _, _, _, _, _, _, isNe1> -> p1_unlock_iteration_2;
+   <goCritic, _, _, _, isLt2, isLt2, _, _> -> p1_unlock_iteration_2;
+   <_, goCritic, _, _, _, _, _, isNe2> -> p2_unlock_iteration_2;
+   <_, goCritic, _, isLt2, _, isLt2, _, _> -> p2_unlock_iteration_2;
+   <_, _, goCritic, _, _, _, _, isNe3> -> p3_unlock_iteration_2;
+   <_, _, goCritic, isLt2, isLt2, _, _, _> -> p3_unlock_iteration_2;
+
+   <goSetQ1, _, _, set0, _, _, _, _> -> p1_set_Q1_0;
+   <_, goSetQ1, _, _, set0, _, _, _> -> p2_set_Q2_0;
+   <_, _, goSetQ1, _, _, set0, _, _> -> p3_set_Q3_0;
 };;
 
-
-system = <Processus P1, Processus P2, Processus P3, VarQ Q1, VarQ Q2, VarQ Q3, VarTURN TURN1, VarTURN TURN2, VarJ J>
-{
-   <goEnd, _, _, _, _, _, _, _, _> -> p1_end;
-   <_, goEnd, _, _, _, _, _, _, _> -> p2_end;
-   <_, _, goEnd, _, _, _, _, _, _> -> p3_end;
-
-   <goSetTURN, _, _, set1, _, _, _, _, is1> -> p1_set_Q1_1;
-   <_, goSetTURN, _, _, set1, _, _, _, is1> -> p2_set_Q2_1;
-   <_, _, goSetTURN, _, _, set1, _, _, is1> -> p3_set_Q3_1;
-
-   <goWait, _, _, _, _, _, set1, _, is1> -> p1_set_TURN1_1;
-   <_, goWait, _, _, _, _, set2, _, is1> -> p2_set_TURN1_2;
-   <_, _, goWait, _, _, _, set3, _, is1> -> p3_set_TURN1_3;
-
-   <goSetQ, _, _, _, _, _, isNe1, _, is1> -> p1_unlock_iteration_1;
-   <goSetQ, _, _, _, isLt1, isLt1, _, _, is1> -> p1_unlock_iteration_1;
-   <_, goSetQ, _, _, _, _, isNe2, _, is1> -> p2_unlock_iteration_1;
-   <_, goSetQ, _, isLt1, _, isLt1, _, _, is1> -> p2_unlock_iteration_1;
-   <_, _, goSetQ, _, _, _, isNe3, _, is1> -> p3_unlock_iteration_1;
-   <_, _, goSetQ, isLt1, isLt1, _, _, _, is1> -> p3_unlock_iteration_1;
-
-   <goSetTURN, _, _, set2, _, _, _, _, is2> -> p1_set_Q1_2;
-   <_, goSetTURN, _, _, set2, _, _, _, is2> -> p2_set_Q2_2;
-   <_, _, goSetTURN, _, _, set2, _, _, is2> -> p3_set_Q3_2;
-
-   <goWait, _, _, _, _, _, _,set1, is2> -> p1_set_TURN2_1;
-   <_, goWait, _, _, _, _, _,set2, is2> -> p2_set_TURN2_2;
-   <_, _, goWait, _, _, _, _,set3, is2> -> p3_set_TURN2_3;
-
-   <goCritic, _, _, _, _, _, _, isNe1, is2> -> p1_unlock_iteration_2;
-   <goCritic, _, _, _, isLt2, isLt2, _, _, is2> -> p1_unlock_iteration_2;
-   <_, goCritic, _, _, _, _, _, isNe2, is2> -> p2_unlock_iteration_2;
-   <_, goCritic, _, isLt2, _, isLt2, _, _, is2> -> p2_unlock_iteration_2;
-   <_, _, goCritic, _, _, _, _, isNe3, is2> -> p3_unlock_iteration_2;
-   <_, _, goCritic, isLt2, isLt2, _, _, _, is2> -> p3_unlock_iteration_2;
-
-   <goSetQ, _, _, set0, _, _, _, _, _> -> p1_set_Q1_0;
-   <_, goSetQ, _, _, set0, _, _, _, _> -> p2_set_Q2_0;
-   <_, _, goSetQ, _, _, set0, _, _, _> -> p3_set_Q3_0;
-};;
-
-bug1 = system -> AX(false) && (P1.wait || P2.wait || P3.wait);;
+bug1 = system -> AX(false) && (P1.wait2 || P2.wait2 || P3.wait2);;
 bug2 = system -> (P1.critic && P2.critic) || (P1.critic && P3.critic) || (P2.critic && P3.critic);;
 
 todot dot/nprocess_bug1.dot bug1;;
 todot dot/nprocess_bug2.dot bug2;;
+load ltl_sys.mso;;
+S = automaton system;;
+
+em = S && exclusion_mutuelle[p <- (P1.critic && P2.critic) || (P1.critic && P3.critic) || (P2.critic && P3.critic)];;
+exmut = reduce em;;
+
+ef = S && equite_forte[a <- P1.wait2, b <- P1.critic];;
+eqfort = reduce ef;;
+
+todot dot/nprocess_ltl_eqfort.dot eqfort;;
+todot dot/nprocess_ltl_exmut.dot exmut;;
